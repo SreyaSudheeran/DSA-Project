@@ -1,0 +1,54 @@
+Project Synopsis: File Compressor and Decompressor
+
+Team members: 
+	Sreya Sudheeran (612303175)
+	Shreya Shinde (612303167)
+
+Project Objective:
+The goal of this project is to develop a file compressor and decompressor that efficiently handles various file formats such as text files and images. The program will implement two compression algorithms, namely Huffman Coding and Lempel-Ziv-Welch (LZW) compression, enabling flexible and effective file size reduction. It will provide users with the ability to compress and decompress files via command-line operations.
+
+Scope:
+The project focuses on implementing two powerful compression algorithms: Huffman Coding, which is optimal for symbol-based compression, and LZW, a dictionary-based algorithm used to compress data based on recurring patterns. The program will allow users to compress and decompress files while minimizing storage and transmission costs.
+
+Problem Statement:
+With the exponential growth of digital content, compressing files efficiently is critical for reducing storage and transmission requirements. This project addresses the need for a versatile and efficient file compression tool that works across multiple file types, providing users with options for compression based on their specific requirements.
+
+Data Structures:
+The project utilizes the following data structures:
+1. Arrays: To store the frequency of symbols and handle bit manipulation.
+2. Binary Trees: Used in Huffman coding to construct the optimal Huffman tree for encoding.
+3. Dictionaries/Hash Maps: Utilized in LZW for pattern matching and storing compressed codes.
+4. Priority Queues: Employed during the construction of the Huffman tree for managing symbol priorities.
+
+Algorithms:
+1. Huffman Coding: A lossless data compression algorithm that generates variable-length codes for characters based on their occurrence frequencies. Characters with higher frequencies are assigned shorter codes, reducing the overall file size.
+
+2. LZW (Lempel-Ziv-Welch): A lossless data compression algorithm that replaces repeated occurrences of data with shorter codes. It builds a dictionary of input sequences and encodes data using these dictionary entries, allowing for efficient compression without the need for prior knowledge of the data format. LZW is commonly used in formats like GIF and TIFF.
+
+Program Workflow:
+The program provides the user with options to select the compression algorithm, and the operations are executed using the following command structure:
+
+- Compression:
+  - `./program -c1 <file> <compressed-file-name>`: Compresses a file using Huffman Coding.
+  - `./program -c2 <file> <compressed-file-name>`: Compresses a file using LZW.
+
+- Decompression:
+  - `./program -uc1 <compressed-file> <uncompressed-file>`: Decompresses a file compressed with Huffman Coding.
+  - `./program -uc2 <compressed-file> <uncompressed-file>`: Decompresses a file compressed with LZW.
+
+Real-World Applications:
+- File Storage System: Compress files to save storage space while maintaining data integrity.
+- Image and Media Compression: LZW, commonly used in image formats like GIF, ensures efficient storage without losing data quality.
+- Data Transfer: Reducing file sizes can expedite the transfer of large files across networks.
+
+Expected Outcomes:
+- Reduced file sizes for more efficient storage and transmission.
+- Ability to compress and decompress files without data loss.
+- Adaptability to compress different file formats, including text and images.
+
+Future Enhancements:
+- Additional algorithms (e.g., Deflate or Bzip2) for further compression options.
+- Integration of a graphical user interface (GUI) for ease of use.
+- Support for batch compression of multiple files.
+
+This file compressor project presents an adaptable, efficient solution for file size reduction using Huffman Coding and LZW, enhancing both storage and data transfer capabilities for modern systems.
