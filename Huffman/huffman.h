@@ -6,6 +6,7 @@ typedef struct MH_Tree{
 	struct MH_Tree *r;
 }MH_Tree;
 
+
 // DATA STRUCTURE FOR TREE NODES
 struct MH_Node{
     	char character;
@@ -26,7 +27,6 @@ typedef struct code{
 	struct code *p;
 }code;
 
-/*All functions*/
 
 int frequency(int fd, int freq[]);
 void HuffmanCodes(int fd2, char arr[], int freq[], int size, int f);
@@ -48,6 +48,5 @@ void ExtractCodes(int fd2);
 void AgainBuildHuffmanTree(int fd1, int size);
 void decompress(int fd1, int fd2, int f);
 int isroot(struct MH_Tree* tree_temp);
-
-extern MH_Tree *tree, *tree_temp, *t;
-extern code *data, *rear, *front;
+extern MH_Tree *tree, *tree_temp , *t ;
+extern code *data, *rear , *front ;

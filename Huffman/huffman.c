@@ -13,9 +13,8 @@
 #define MAX 32
 #define MAX_TREE_HT 100
 
-// huffman.c or main.c (but not both)
-MH_Tree *tree = NULL, *tree_temp = NULL, *t = NULL;
-code *data = NULL, *rear = NULL, *front = NULL;
+MH_Tree *tree, *tree_temp , *t ;
+code *data, *rear , *front ;
 
 // FUNCTION TO INITIALIZE NEW NODE    
 struct MH_Node* newNode(char character, int freq){
@@ -49,17 +48,16 @@ int frequency(int fd, int freq[]){
 
 // FUNCTION TO GENERATE UNIQUE CODES FOR ALL CHARACTERS IN TEXT
 void HuffmanCodes(int fd2, char arr[], int freq[], int size, int f){
-	int k = 0, i, n = 0;
+	int k = 0, i;
 	for(i = 0; i < 128; i++){
 		if(freq[i] != 0){
 			freq[k] = freq[i];
 			arr[k++] = arr[i];
-			n++;
 		}
 	}
 
 	// WRITING NUMBER OF UNIQUE CHARACTERS IN A FILE
-	write(fd2, &n, sizeof(int));
+	write(fd2, &size, sizeof(int));//change
 
 	// WRITING TOTAL NUMBER OF CHARACTERS IN A FILE
 	write(fd2, &f, sizeof(int));
@@ -90,7 +88,7 @@ struct M_Heap* createAndBuildM_Heap(char arr[], int freq[], int size){
     	int i;
 
 		// INITIALIZING HEAP
-        struct M_Heap* M_Heap = createM_Heap(size);
+        struct M_Heap* M_Heap = createM_Heap(size);//why return a pointer?
 
 		// INITIALZING THE ARRAY OF POINTERS IN MIN HEAP. POINTERS POINTING TO NEW NODES OF CHARACTER AND THEIR FREQUENCY
         for (i = 0; i < size; ++i)
@@ -157,6 +155,7 @@ void swapMH_Node(struct MH_Node** a, struct MH_Node** b){
 }
 
 // FUNCTION TO PRINT ARRAY ONE BY ONE
+//No need
 void printArr(int t[], int n){
     int i;
     for (i = 0; i < n; ++i){
@@ -172,8 +171,8 @@ int isLeaf(struct MH_Node* root){
 
 int k = 0;
 void printCodes(int fd2, struct MH_Node* root, int t[], int top){
-	int i;
-	if (root->l){
+    int i;
+    if (root->l){
         t[top] = 0;
         printCodes(fd2, root->l, t, top + 1);
     }
@@ -186,7 +185,6 @@ void printCodes(int fd2, struct MH_Node* root, int t[], int top){
     if (isLeaf(root)){
         data = (code*)malloc(sizeof(code));
         tree = (MH_Tree*)malloc(sizeof(MH_Tree));
-        data->p = NULL;
         data->k = root->character;
         tree->g = root->character;
         write(fd2, &tree->g, sizeof(char));
@@ -207,7 +205,7 @@ void printCodes(int fd2, struct MH_Node* root, int t[], int top){
     		rear->p = data;
     		rear = rear->p;
     	}
-	}
+    }
 }
 
 // FUNCTION TO COMPRESS THE FILE BY SUBSTITUTING CHARACTERS WITH THEIR HUFFMAN CODES
@@ -312,42 +310,43 @@ void AgainBuildHuffmanTree(int fd1, int size){
 			bin[i] = bin_con[i] = 0;
 		}
 		decimaltobinary(bin, t->dec, t->len);
-        for(i = 0; i < t->len; i++){
-	    	bin_con[i] = bin[i];
-		}
-	    
-		for(j = 0; j < t->len; j++){
-    		if(bin_con[j] == 0){
-    			if(tree_temp->f == NULL){
-    				tree_temp->f = (MH_Tree*)malloc(sizeof(MH_Tree));
-    			}
-    			tree_temp = tree_temp->f;
-    		}
-    		else if(bin_con[j] == 1){
-    			if(tree_temp->r == NULL){
-    				tree_temp->r = (MH_Tree*)malloc(sizeof(MH_Tree));
-    			}
-    			tree_temp = tree_temp->r;
-			}
-		}
-		tree_temp->g = t->g;
-		tree_temp->len = t->len;
-    	tree_temp->dec = t->dec;
- 		tree_temp->f = NULL;
-    	tree_temp->r = NULL;
-    	tree_temp = tree;
+                for(i = 0; i < t->len; i++){
+	            	bin_con[i] = bin[i];
+	          }
+	            
+	        for(j = 0; j < t->len; j++){
+            		if(bin_con[j] == 0){
+            			if(tree_temp->f == NULL){
+            				tree_temp->f = (MH_Tree*)malloc(sizeof(MH_Tree));
+            			}
+            			tree_temp = tree_temp->f;
+            		}
+            		else if(bin_con[j] == 1){
+            			if(tree_temp->r == NULL){
+            				tree_temp->r = (MH_Tree*)malloc(sizeof(MH_Tree));
+            			}
+            			tree_temp = tree_temp->r;
+		          }
+	        }
+	        tree_temp->g = t->g;
+	        tree_temp->len = t->len;
+            	tree_temp->dec = t->dec;
+         	tree_temp->f = NULL;
+            	tree_temp->r = NULL;
+            	tree_temp = tree;
 	}  	
 }
 
 // FUNCTION TO GET BACK ORIGINAL FILE WITHOUT LOSING ANY DATA
 void decompress(int fd1, int fd2, int f){
+        tree_temp = tree;
 	int inp[8], i, k = 0;
 	unsigned char p;
 	read(fd1, &p, sizeof(char));
 	decimaltobinary(inp, p, 8);
 	tree_temp = tree;
 	for(i = 0; i < 8 && k < f; i++){
-		if(!isroot(tree_temp)){
+		if(!isroot(tree_temp)){//is it root or leaf?
 			if(i != 7){
 				if(inp[i] == 0){
 					tree_temp = tree_temp->f;
@@ -381,7 +380,8 @@ void decompress(int fd1, int fd2, int f){
 	}
 }
 	    
-// FUNCTION TO CHECK IF A GIVEN NODE IS A ROOT NODE
+// FUNCTION TO CHECK IF A GIVEN NODE IS A ROOT NODE 
+//change name to is leaf for mh_tree
 int isroot(struct MH_Tree* tree_temp){
 	return !(tree_temp->f) && !(tree_temp->r);
-}	
+}			

@@ -13,7 +13,6 @@
 #define MAX 32
 #define MAX_TREE_HT 100
 
-
 int main(int argc, char *argv[]){
 
 	// CHECKING PROPER NUMBER OF ARGUMENTS
