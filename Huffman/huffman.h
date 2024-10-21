@@ -8,17 +8,17 @@ typedef struct MH_Tree{
 
 
 // DATA STRUCTURE FOR TREE NODES
-struct MH_Node{
+typedef struct MH_Node{
     	char character;
     	int freq;
     	struct MH_Node *l, *r;
-};
+}MH_Node;
      
 // DATA STRUCTURE FOR MIN HEAP     
-struct M_Heap{
+typedef struct M_Heap{
     	int size;
     	struct MH_Node **array;
-};
+}M_Heap;
      
 typedef struct code{
 	char k;
@@ -38,7 +38,6 @@ struct MH_Node* extractMin(struct M_Heap* M_Heap);
 void insertM_Heap(struct M_Heap* M_Heap, struct MH_Node* MH_Node);
 int isSizeOne(struct M_Heap* M_Heap);
 void swapMH_Node(struct MH_Node** a, struct MH_Node** b);
-void printArr(int arr[], int n);
 int isLeaf(struct MH_Node* root);
 void printCodes(int fd2, struct MH_Node* root, int t[], int top);
 void compressfile(int fd1, int fd2, unsigned char a);
@@ -47,6 +46,6 @@ int binarytodecimal(int bin[], int len);
 void ExtractCodes(int fd2);
 void AgainBuildHuffmanTree(int fd1, int size);
 void decompress(int fd1, int fd2, int f);
-int isroot(struct MH_Tree* tree_temp);
+int isLeafTree(struct MH_Tree* tree_temp);
 extern MH_Tree *tree, *tree_temp , *t ;
 extern code *data, *rear , *front ;

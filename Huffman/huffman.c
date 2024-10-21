@@ -154,15 +154,6 @@ void swapMH_Node(struct MH_Node** a, struct MH_Node** b){
     *b = t;
 }
 
-// FUNCTION TO PRINT ARRAY ONE BY ONE
-//No need
-void printArr(int t[], int n){
-    int i;
-    for (i = 0; i < n; ++i){
-    	printf("%d", t[i]);
-    }
-    printf("\n");
-}
      
 // FUNCTION TO CHECK IF GIVEN NODE IS A LEAF NODE       
 int isLeaf(struct MH_Node* root){
@@ -184,17 +175,14 @@ void printCodes(int fd2, struct MH_Node* root, int t[], int top){
      
     if (isLeaf(root)){
         data = (code*)malloc(sizeof(code));
-        tree = (MH_Tree*)malloc(sizeof(MH_Tree));
         data->k = root->character;
-        tree->g = root->character;
-        write(fd2, &tree->g, sizeof(char));
+        write(fd2, &data->k, sizeof(char));
         for(i = 0; i < top; i++){
         	data->code_arr[i] = t[i];
         }
-        tree->len = top;
-        write(fd2, &tree->len, sizeof(int));
-        tree->dec = binarytodecimal(data->code_arr, top);
-        write(fd2, &tree->dec, sizeof(int));
+        write(fd2, &top, sizeof(int));
+        int decimal = binarytodecimal(data->code_arr, top);
+        write(fd2, &decimal, sizeof(int));
         data->l = top;
         data->p = NULL;      
     	if(k == 0){
@@ -346,7 +334,7 @@ void decompress(int fd1, int fd2, int f){
 	decimaltobinary(inp, p, 8);
 	tree_temp = tree;
 	for(i = 0; i < 8 && k < f; i++){
-		if(!isroot(tree_temp)){//is it root or leaf?
+		if(!isLeafTree(tree_temp)){//is it root or leaf?
 			if(i != 7){
 				if(inp[i] == 0){
 					tree_temp = tree_temp->f;
@@ -382,6 +370,6 @@ void decompress(int fd1, int fd2, int f){
 	    
 // FUNCTION TO CHECK IF A GIVEN NODE IS A ROOT NODE 
 //change name to is leaf for mh_tree
-int isroot(struct MH_Tree* tree_temp){
+int isLeafTree(struct MH_Tree* tree_temp){
 	return !(tree_temp->f) && !(tree_temp->r);
 }			

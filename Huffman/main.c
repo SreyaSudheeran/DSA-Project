@@ -17,7 +17,7 @@ int main(int argc, char *argv[]){
 
 	// CHECKING PROPER NUMBER OF ARGUMENTS
 	if(argc != 4){
-		printf("Give Proper Arguements\n");
+		printf("Give Proper Arguments\n");
 	}
 
 	// CHECKING FLAG: "c" FOR COMPRESSION, "d" FOR DECOMPRESSION
@@ -40,7 +40,7 @@ int main(int argc, char *argv[]){
 			exit(1);
 		}
 	
-		// INITIALIZING FREQUENCY ARRAY WITH ZERO VALUES AND CHARACTER ARRAY WITH CORROSPONDING ASCII CHARACTERS
+		// INITIALIZING FREQUENCY ARRAY WITH ZERO VALUES AND CHARACTER ARRAY WITH CORRESPONDING ASCII CHARACTERS
 		for(i = 0; i < 128; i++){
 			freq[i] = 0; 
 			arr[i] = (char)i;	
