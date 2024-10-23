@@ -5,7 +5,6 @@ struct comp_DictNode {
     struct comp_DictNode *next;
 };
 
-
 struct comp_DictNode *dictionary, *tail;
 
 void comp_dict_Init();
@@ -15,14 +14,6 @@ int comp_dict_Lookup(int prefix, int character);
 void comp_dict_Add(int prefix, int character, int value);
 void comp_writeBinary(FILE * output, int code);
 void compress(FILE *inputFile, FILE *outputFile);
+#define dictionarySize 4095
 
-// Enumerations for constants
-enum {
-    emptyPrefix = -1 // empty prefix for ASCII characters
-};
 
-enum {
-    dictionarySize = 4095, 
-    codeLength = 12, 
-    maxValue = dictionarySize - 1
-};

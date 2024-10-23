@@ -3,17 +3,16 @@
 #include <string.h>
 #include "comp_dict_lzw.h"
 
+
 int leftover = 0;
 int leftoverBits;
-
-
 
 void comp_dict_Init(){
 	int i;
     	struct comp_DictNode *node;
 	for (i = 0; i < 256; i++) { 
         	node = (struct comp_DictNode *)malloc(sizeof(struct comp_DictNode));
-        	node->prefix = emptyPrefix;
+        	node->prefix = -1;
         	node->character = i;
         	comp_appendNode(node);
         }       
@@ -26,7 +25,9 @@ void comp_appendNode(struct comp_DictNode *node){
 }
 void comp_dict_Destroy(){
 	while (dictionary != NULL) {
+	        struct comp_DictNode *node = dictionary;
         	dictionary = dictionary->next; 
+        	free(node);
         }
 }
 int comp_dict_Lookup(int prefix, int character){
@@ -34,7 +35,7 @@ int comp_dict_Lookup(int prefix, int character){
         for (node = dictionary; node != NULL; node = node->next) { // ...traverse forward
         	if (node->prefix == prefix && node->character == character) return node->value;
         }
-        return emptyPrefix;	
+        return -1;	
 }
 void comp_dict_Add(int prefix, int character, int value){
 	struct comp_DictNode *node;
@@ -42,7 +43,6 @@ void comp_dict_Add(int prefix, int character, int value){
     	node->value = value;
     	node->prefix = prefix;
     	node->character = character;
-    	//printf("\n(%i) = (%i) + (%i)\n", node->value, node->prefix, node->character);
     	comp_appendNode(node);
 }
 void comp_writeBinary(FILE * output, int code){
@@ -79,23 +79,17 @@ void compress(FILE *inputFile, FILE *outputFile){
     	comp_dict_Init();
     
     
-    	while ((character = getc(inputFile)) != (unsigned)EOF) { // ch = read a character;
+    	while ((character = getc(inputFile)) != (unsigned)EOF) {
         
         
-        	if ((index = comp_dict_Lookup(prefix, character)) != -1) prefix = index; // prefix = prefix+character
+        	if ((index = comp_dict_Lookup(prefix, character)) != -1) prefix = index;
         	else { 
         	    	comp_writeBinary(outputFile, prefix);
-            
-            // add prefix+character to dictionary
         	    	if (nextCode < dictionarySize) comp_dict_Add(prefix, character, nextCode++);
-            
-            // prefix = character
-        	    	prefix = character; //... output the last string after adding the new one
+        	    	prefix = character; 
         	}
     	}
-    // encode s to output file
-    	comp_writeBinary(outputFile, prefix); // output the last code
-    
+    	comp_writeBinary(outputFile, prefix);
     	if (leftover > 0) fputc(leftoverBits << 4, outputFile);
     
     // free the dictionary here

@@ -4,7 +4,7 @@ typedef struct{
 } dcomp_DictElement;
 
 dcomp_DictElement dictionaryArray[4095];
-
+#define dictionarySize 4095
 
 void dcomp_dict_ArrayAdd(int prefix, int character, int value);
 int dcomp_dict_ArrayPrefix(int value);

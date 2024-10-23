@@ -3,17 +3,8 @@
 #include <string.h> 
 #include "dcomp_dict_lzw.h"
 
-enum {
-        dictionarySize = 4095, // maximum number of entries defined for the dictionary (2^12 = 4096)
-    	codeLength = 12, 
-    	maxValue = dictionarySize - 1
-};
-
-
 int leftoverd = 0;
 int leftoverBitsd;
-
-
 
 void dcomp_dict_ArrayAdd(int prefix, int character, int value) {
         dictionaryArray[value].prefix = prefix;
@@ -41,7 +32,7 @@ int readBinary(FILE * input) {
     	else {
         	int nextCode = fgetc(input);
         
-       		leftoverBitsd = nextCode & 0xF; // save leftover, the last 00001111
+       		leftoverBitsd = nextCode & 0xF; 
         	leftoverd = 1;
         
         	code = (code << 4) + (nextCode >> 4);
@@ -50,8 +41,6 @@ int readBinary(FILE * input) {
 }
 
 void decompress(FILE * inputFile, FILE * outputFile) {
-	
-    
         int previousCode; int currentCode;
         int nextCode = 256; 
 
@@ -63,15 +52,12 @@ void decompress(FILE * inputFile, FILE * outputFile) {
    	        return;
     	}
     	fputc(previousCode, outputFile);
-	//printf("fputc(previousCode, outputFile);\n");    
    
    	while ((currentCode = readBinary(inputFile)) > 0) { 
     
         	if (currentCode >= nextCode) {
-        		//printf("Inside if\n");
-                fputc(firstChar = decode(previousCode, outputFile), outputFile); 
-            
-        } 
+                    fputc(firstChar = decode(previousCode, outputFile), outputFile); 
+                } 
         else firstChar = decode(currentCode, outputFile); 
         
         
@@ -80,19 +66,18 @@ void decompress(FILE * inputFile, FILE * outputFile) {
       
         previousCode = currentCode;
     	}
-    	//printf("Out of While\n");
   
 }
 
 int decode(int code, FILE * outputFile) {
     	int character; int temp;
 
-    	if (code > 255) { // decode
+    	if (code > 255) { 
         	character = dcomp_dict_ArrayCharacter(code);
-        	temp = decode(dcomp_dict_ArrayPrefix(code), outputFile); // recursion
+        	temp = decode(dcomp_dict_ArrayPrefix(code), outputFile);
     	} 	
     	else {
-        	character = code; // ASCII
+        	character = code; 
         	temp = code;
     	}
     	fputc(character, outputFile);
