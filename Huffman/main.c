@@ -10,46 +10,47 @@
 #include<string.h>
 #include<unistd.h>
 #include<math.h>
+
 #define MAX 32
 #define MAX_TREE_HT 100
 
-int main(int argc, char *argv[]){
+int main(int argc, char *argv[]) {
 
-	// CHECKING PROPER NUMBER OF ARGUMENTS
+	/* CHECKING PROPER NUMBER OF ARGUMENTS */
 	if(argc != 4){
 		printf("Give Proper Arguments\n");
 	}
 
-	// CHECKING FLAG: "c" FOR COMPRESSION, "d" FOR DECOMPRESSION
+	/* CHECKING FLAG: "c" FOR COMPRESSION, "d" FOR DECOMPRESSION */
 	if(strcmp(argv[1], "c") == 0){	
 		unsigned char a = 0;
 		int fd1, fd2, freq[128], i, size = 0, f;
 		char arr[128];
 		
-		// OPENING INPUT FILE IN READ_ONLY MODE
+		/* OPENING INPUT FILE IN READ_ONLY MODE */
 		fd1 = open(argv[2], O_RDONLY);
 		if(fd1 == -1){
 			perror("Open Failed For Input File:\n");
 			exit(1);
 		}
 
-		// CREATING OUTPUT FILE IN WRITE MODE
+		/* CREATING OUTPUT FILE IN WRITE MODE */
 		fd2 = open(argv[3], O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
 		if(fd2 == -1){
 			perror("Open Failed For Output File:\n");
 			exit(1);
 		}
 	
-		// INITIALIZING FREQUENCY ARRAY WITH ZERO VALUES AND CHARACTER ARRAY WITH CORRESPONDING ASCII CHARACTERS
+		/* INITIALIZING FREQUENCY ARRAY WITH ZERO VALUES AND CHARACTER ARRAY WITH CORRESPONDING ASCII CHARACTERS */
 		for(i = 0; i < 128; i++){
 			freq[i] = 0; 
 			arr[i] = (char)i;	
 		}
 		    	
-		// FREQUENCY ARRAY FOR ALL INPUT FILE CHARACTERS		
+		/* FREQUENCY ARRAY FOR ALL INPUT FILE CHARACTERS */		
 		f = frequency(fd1, freq);
 
-		// CALCULATING NUMBER OF UNIQUE CHARACTERS IN THE FILE
+		/* CALCULATING NUMBER OF UNIQUE CHARACTERS IN THE FILE */
 		for( i = 0; i < 127; i++){
 			if(freq[i] != 0){
 				size++;

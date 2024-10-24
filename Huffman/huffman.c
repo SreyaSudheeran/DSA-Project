@@ -10,32 +10,33 @@
 #include<string.h>
 #include<unistd.h>
 #include<math.h>
+
 #define MAX 32
 #define MAX_TREE_HT 100
 
-MH_Tree *tree, *tree_temp , *t ;
+Htree *tree, *tree_temp , *t ;
 code *data, *rear , *front ;
 
-// FUNCTION TO INITIALIZE NEW NODE    
-struct MH_Node* newNode(char character, int freq){
-        struct MH_Node* temp = (struct MH_Node*) malloc(sizeof(struct MH_Node));
+/* FUNCTION TO INITIALIZE NEW NODE */   
+node* newNode(char character, int freq) {
+        node* temp = (node*) malloc(sizeof(node));
         temp->l = temp->r = NULL;
         temp->character = character;
         temp->freq = freq;
         return temp;
 }
      
-// FUNCTION TO INITIALIZE A MIN HEAP     
-struct M_Heap* createM_Heap(int size){
-        struct M_Heap* M_Heap = (struct M_Heap*) malloc(sizeof(struct M_Heap));
-        M_Heap->size = size;
-        M_Heap->array = (struct MH_Node**)malloc(M_Heap->size * sizeof(struct MH_Node*));
-        return M_Heap;
+/* FUNCTION TO INITIALIZE A MIN HEAP */   
+heap* createheap(int size) {
+        heap* new_heap = (heap*)malloc(sizeof(heap));
+        new_heap->size = size;
+        new_heap->array = (node**)malloc(new_heap->size * sizeof(node*));
+        return new_heap;
 }
 
 
-// CREATION OF FREQUENCY ARRAY FOR THE INPUT FILE CHARACTERS
-int frequency(int fd, int freq[]){
+/* CREATION OF FREQUENCY ARRAY FOR THE INPUT FILE CHARACTERS */
+int frequency(int fd, int freq[]) {
 	char n;
 	int k, p = 0;
 	while(read(fd, &n, sizeof(char)) != 0){
@@ -46,8 +47,8 @@ int frequency(int fd, int freq[]){
 	return p;
 }   
 
-// FUNCTION TO GENERATE UNIQUE CODES FOR ALL CHARACTERS IN TEXT
-void HuffmanCodes(int fd2, char arr[], int freq[], int size, int f){
+/* FUNCTION TO GENERATE UNIQUE CODES FOR ALL CHARACTERS IN TEXT */
+void HuffmanCodes(int fd2, char arr[], int freq[], int size, int f) {
 	int k = 0, i;
 	for(i = 0; i < 128; i++){
 		if(freq[i] != 0){
@@ -56,175 +57,180 @@ void HuffmanCodes(int fd2, char arr[], int freq[], int size, int f){
 		}
 	}
 
-	// WRITING NUMBER OF UNIQUE CHARACTERS IN A FILE
+	/* WRITING NUMBER OF UNIQUE CHARACTERS IN A FILE */
 	write(fd2, &size, sizeof(int));//change
 
-	// WRITING TOTAL NUMBER OF CHARACTERS IN A FILE
+	/* WRITING TOTAL NUMBER OF CHARACTERS IN A FILE */
 	write(fd2, &f, sizeof(int));
 
-	struct MH_Node* root = buildHuffmanTree(arr, freq, size);
+	node* root = buildHuffmanTree(arr, freq, size);
 	int t[MAX_TREE_HT], top = 0;
 	printCodes(fd2, root, t, top);
 }
     
-// FUNCTION TO BUILD AND CREATE A HUFFMAN TREE
-struct MH_Node* buildHuffmanTree(char arr[], int freq[], int size){
-        struct MH_Node *l, *r, *top;
-        struct M_Heap* M_Heap = createAndBuildM_Heap(arr, freq, size);
-        while (!isSizeOne(M_Heap))
-        {
-            l = extractMin(M_Heap);
-            r = extractMin(M_Heap);
-            top = newNode('$', l->freq + r->freq);
-            top->l = l;
-            top->r = r;
-            insertM_Heap(M_Heap, top);
-        }
-        return extractMin(M_Heap);
+/* FUNCTION TO BUILD AND CREATE A HUFFMAN TREE */
+node* buildHuffmanTree(char arr[], int freq[], int size) {
+	node *l, *r, *top;
+	heap* heap = createAndBuildheap(arr, freq, size);
+	while (!isSizeOne(heap))
+	{
+		l = extractMin(heap);
+		r = extractMin(heap);
+		top = newNode('$', l->freq + r->freq);
+		top->l = l;
+		top->r = r;
+		insertheap(heap, top);
+	}
+	return extractMin(heap);
 }   
 
 
-struct M_Heap* createAndBuildM_Heap(char arr[], int freq[], int size){
+heap* createAndBuildheap(char arr[], int freq[], int size) {
     	int i;
 
-		// INITIALIZING HEAP
-        struct M_Heap* M_Heap = createM_Heap(size);//why return a pointer?
+	/* INITIALIZING HEAP */
+        heap* heap = createheap(size);
 
-		// INITIALZING THE ARRAY OF POINTERS IN MIN HEAP. POINTERS POINTING TO NEW NODES OF CHARACTER AND THEIR FREQUENCY
+	/* INITIALZING THE ARRAY OF POINTERS IN MIN HEAP. POINTERS POINTING TO NEW NODES OF CHARACTER AND THEIR FREQUENCY */
         for (i = 0; i < size; ++i)
-            M_Heap->array[i] = newNode(arr[i], freq[i]);
+		heap->array[i] = newNode(arr[i], freq[i]);
 
-        buildM_Heap(M_Heap);
-        return M_Heap;
+        buildheap(heap);
+        return heap;
 } 
 
-// FUNCTION TO BUILD MIN HEAP
-void buildM_Heap(struct M_Heap* M_Heap){
-        int n = M_Heap->size - 1;
+/* FUNCTION TO BUILD MIN HEAP */
+void buildheap(heap* heap) {
+        int n = heap->size - 1;
         int i;
         for (i = (n - 1) / 2; i >= 0; --i)
-    		M_Heapify(M_Heap, i);
+    		heapify(heap, i);
 }
 
-// FUNCTION TO ORGANIZE ELEMENTS IN HEAP STRUCTURE
-void M_Heapify(struct M_Heap* M_Heap, int idx){
+/* FUNCTION TO ORGANIZE ELEMENTS IN HEAP STRUCTURE */
+void heapify(heap* heap, int idx) {
         int smallest = idx;
         int l = 2 * idx + 1;
         int r = 2 * idx + 2;
      
-        if (l < M_Heap->size && M_Heap->array[l]->freq < M_Heap->array[smallest]->freq)
+        if (l < heap->size && heap->array[l]->freq < heap->array[smallest]->freq)
     		smallest = l;
-    	if (r < M_Heap->size && M_Heap->array[r]->freq < M_Heap->array[smallest]->freq)
+    		
+    	if (r < heap->size && heap->array[r]->freq < heap->array[smallest]->freq)
     		smallest = r;
-        if (smallest != idx){
-    		swapMH_Node(&M_Heap->array[smallest], &M_Heap->array[idx]);
-    		M_Heapify(M_Heap, smallest);
+    		
+        if (smallest != idx) {
+    		swapnode(&heap->array[smallest], &heap->array[idx]);
+    		heapify(heap, smallest);
         }
 }
 
-// FUNCTION TO EXTRACT MINIMUM ELEMENT AND REORGANIZE THE MIN HEAP 
-struct MH_Node* extractMin(struct M_Heap* M_Heap){
-        struct MH_Node* temp = M_Heap->array[0];
-        M_Heap->array[0] = M_Heap->array[M_Heap->size - 1];
-        --M_Heap->size;
-        M_Heapify(M_Heap, 0);
+/* FUNCTION TO EXTRACT MINIMUM ELEMENT AND REORGANIZE THE MIN HEAP */
+node* extractMin(heap* heap) {
+        node* temp = heap->array[0];
+        heap->array[0] = heap->array[heap->size - 1];
+        --heap->size;
+        heapify(heap, 0);
         return temp;
 }
 
-// FUNCTION TO INSERT A NEW ELEMENT TO MIN HEAP
-void insertM_Heap(struct M_Heap* M_Heap, struct MH_Node* MH_Node){
-    int i = M_Heap->size;
-    ++M_Heap->size;
-    while (i && MH_Node->freq < M_Heap->array[(i - 1)/2]->freq){
-    	M_Heap->array[i] = M_Heap->array[(i - 1)/2];
-    	i = (i - 1)/2;
-    }
-    M_Heap->array[i] = MH_Node;
+/* FUNCTION TO INSERT A NEW ELEMENT TO MIN HEAP */
+void insertheap(heap* heap, node* node) {
+	int i = heap->size;
+	++heap->size;
+	while (i && node->freq < heap->array[(i - 1)/2]->freq) {
+		heap->array[i] = heap->array[(i - 1)/2];
+		i = (i - 1)/2;
+	}
+	heap->array[i] = node;
 }
 
-// FUNCTION TO CHECK IF HEAP SIZE = 1
-int isSizeOne(struct M_Heap* M_Heap){
-    return (M_Heap->size == 1);
+/* FUNCTION TO CHECK IF HEAP SIZE = 1 */
+int isSizeOne(heap* heap) {
+	return (heap->size == 1);
 }
 
-// FUNCTION TO SWAP TWO GIVEN NODES
-void swapMH_Node(struct MH_Node** a, struct MH_Node** b){
-    struct MH_Node* t = *a;
-    *a = *b;
-    *b = t;
+/* FUNCTION TO SWAP TWO GIVEN NODES */
+void swapnode(node** a, node** b) {
+	node* t = *a;
+	*a = *b;
+	*b = t;
 }
 
      
-// FUNCTION TO CHECK IF GIVEN NODE IS A LEAF NODE       
-int isLeaf(struct MH_Node* root){
-    return !(root->l) && !(root->r) ;
+/* FUNCTION TO CHECK IF GIVEN NODE IS A LEAF NODE */   
+int isLeaf(node* root) {
+	return !(root->l) && !(root->r);
 }
 
 int k = 0;
-void printCodes(int fd2, struct MH_Node* root, int t[], int top){
-    int i;
-    if (root->l){
-        t[top] = 0;
-        printCodes(fd2, root->l, t, top + 1);
-    }
+
+void printCodes(int fd2, node* root, int t[], int top) {
+	int i;
+	if(root->l) {
+		t[top] = 0;
+		printCodes(fd2, root->l, t, top + 1);
+	}
      
-    if (root->r){
-        t[top] = 1;
-        printCodes(fd2, root->r, t, top + 1);
-    }
+	if(root->r) {
+		t[top] = 1;
+		printCodes(fd2, root->r, t, top + 1);
+	}
      
-    if (isLeaf(root)){
-        data = (code*)malloc(sizeof(code));
-        data->k = root->character;
-        write(fd2, &data->k, sizeof(char));
-        for(i = 0; i < top; i++){
-        	data->code_arr[i] = t[i];
-        }
-        write(fd2, &top, sizeof(int));
-        int decimal = binarytodecimal(data->code_arr, top);
-        write(fd2, &decimal, sizeof(int));
-        data->l = top;
-        data->p = NULL;      
-    	if(k == 0){
-    		front = rear = data;
+	if(isLeaf(root)) {
+		data = (code*)malloc(sizeof(code));
+		data->k = root->character;
+		write(fd2, &data->k, sizeof(char));
+		
+		for(i = 0; i < top; i++){
+			data->code_arr[i] = t[i];
+		}
+		
+		write(fd2, &top, sizeof(int));
+		int decimal = binarytodecimal(data->code_arr, top);
+		write(fd2, &decimal, sizeof(int));
+		data->l = top;
+		data->p = NULL;      
+		if(k == 0){
+			front = rear = data;
 			k++;
-    	}
-    	else{
-    		rear->p = data;
-    		rear = rear->p;
-    	}
-    }
+		}
+		else{
+			rear->p = data;
+			rear = rear->p;
+		}
+	}
 }
 
-// FUNCTION TO COMPRESS THE FILE BY SUBSTITUTING CHARACTERS WITH THEIR HUFFMAN CODES
+/* FUNCTION TO COMPRESS THE FILE BY SUBSTITUTING CHARACTERS WITH THEIR HUFFMAN CODES */
 void compressfile(int fd1, int fd2, unsigned char a){
 	char n;
 	int h = 0, i;
-	// CODES ARE WRITTEN INTO FILE IN BIT BY BIT FORMAT
-	while(read(fd1, &n, sizeof(char)) != 0){
+	/* CODES ARE WRITTEN INTO FILE IN BIT BY BIT FORMAT */
+	while(read(fd1, &n, sizeof(char)) != 0) {
 		rear = front;
-		while(rear->k != n && rear->p != NULL){
+		while(rear->k != n && rear->p != NULL) {
 			rear = rear->p;
 		}
-		if(rear->k == n){
-			for(i = 0; i < rear->l; i++){
-				if(h < 7){
-					if(rear->code_arr[i] == 1){
+		if(rear->k == n) {
+			for(i = 0; i < rear->l; i++) {
+				if(h < 7) {
+					if(rear->code_arr[i] == 1) {
 						a++;
 						a = a << 1;
 						h++;
 					}
-					else if(rear->code_arr[i] == 0){
+					else if(rear->code_arr[i] == 0) {
 						a = a << 1;
 						h++;
 					}
 				}
-				else if(h == 7){
-					if(rear->code_arr[i] == 1){
+				else if(h == 7) {
+					if(rear->code_arr[i] == 1) {
 						a++;
 						h = 0;
 					}
-					else{
+					else {
 						h = 0;
 					}
 				    write(fd2, &a, sizeof(char));
@@ -239,79 +245,79 @@ void compressfile(int fd1, int fd2, unsigned char a){
 	write(fd2, &a, sizeof(char));
 }
 				
-// FUNCTION TO CONVERT DECIMAL NUMBER TO ITS BINARY EQUIVALENT
-void decimaltobinary(int bin[], int f, int len){
+/* FUNCTION TO CONVERT DECIMAL NUMBER TO ITS BINARY EQUIVALENT*/
+void decimaltobinary(int bin[], int f, int len) {
 	int i = 0, t;
-	for(i = 0;i < len; i++){
+	for(i = 0;i < len; i++) {
 		bin[i] = 0;
 	}
 	i = 0;
-	while(f != 0 && i < len){
+	while(f != 0 && i < len) {
 		if(f % 2 == 0){
 		
 			bin[i++] = 0;
 			f = f / 2;
 		}
-		else if(f % 2 == 1){
+		else if(f % 2 == 1) {
 			bin[i++] = 1;
 			f = f / 2;
 		}		
 	}
-	for(i = 0; i < (len)/2; i++){
+	for(i = 0; i < (len)/2; i++) {
 		t = bin[i];
 		bin[i] = bin[(len - 1) - i];
 		bin[(len - 1) - i] = t;
 	}
 }
 
-// FUNCTION TO CONVERT BINARY NUMBER TO ITS DECIMAL EQUIVALENT
-int binarytodecimal(int bin[], int len){
+/* FUNCTION TO CONVERT BINARY NUMBER TO ITS DECIMAL EQUIVALENT */
+int binarytodecimal(int bin[], int len) {
 	int i = 0, sum = 0;
-	for(i = 0; i < len; i++){
+	for(i = 0; i < len; i++) {
 		sum = sum + bin[i]*pow(2, (len - 1) - i);
 	}
 	return sum;
 }
 				
-// FUNCTION TO EXTRACT HUFFMAN CODES FROM A COMPRESSED FILE
-void ExtractCodes(int fd1){
+/* FUNCTION TO EXTRACT HUFFMAN CODES FROM A COMPRESSED FILE */
+void ExtractCodes(int fd1) {
 	read(fd1, &t->g, sizeof(char));
 	read(fd1, &t->len, sizeof(int));
 	read(fd1, &t->dec, sizeof(int));
 }
     
-// FUNCTION TO BUILD HUFFMAN TREE FROM DATA EXTRACTED FROM COMPRESSED FILE
+/* FUNCTION TO BUILD HUFFMAN TREE FROM DATA EXTRACTED FROM COMPRESSED FILE */
 void AgainBuildHuffmanTree(int fd1, int size){
 	int i = 0, j, k;
-	tree = (MH_Tree *)malloc(sizeof(MH_Tree));
+	tree = (Htree *)malloc(sizeof(Htree));
 	tree_temp = tree;
 	tree->f = NULL;
 	tree->r = NULL;
-	t = (MH_Tree*)malloc(sizeof(MH_Tree));
+	t = (Htree*)malloc(sizeof(Htree));
 	t->f = NULL;
 	t->r = NULL;
-	for(k = 0; k < size; k++){ 
+	for(k = 0; k < size; k++) { 
 		tree_temp = tree;
 		ExtractCodes(fd1);
 		int bin[MAX], bin_con[MAX];
-		for(i = 0; i < MAX; i++){
+		for(i = 0; i < MAX; i++) {
 			bin[i] = bin_con[i] = 0;
 		}
 		decimaltobinary(bin, t->dec, t->len);
-                for(i = 0; i < t->len; i++){
+                for(i = 0; i < t->len; i++) {
 	            	bin_con[i] = bin[i];
 	          }
 	            
-	        for(j = 0; j < t->len; j++){
-            		if(bin_con[j] == 0){
-            			if(tree_temp->f == NULL){
-            				tree_temp->f = (MH_Tree*)malloc(sizeof(MH_Tree));
+	        for(j = 0; j < t->len; j++) {
+            		if(bin_con[j] == 0) {
+            			if(tree_temp->f == NULL) {
+            				tree_temp->f = (Htree*)malloc(sizeof(Htree));
             			}
             			tree_temp = tree_temp->f;
             		}
-            		else if(bin_con[j] == 1){
-            			if(tree_temp->r == NULL){
-            				tree_temp->r = (MH_Tree*)malloc(sizeof(MH_Tree));
+            		else if(bin_con[j] == 1) {
+            			if(tree_temp->r == NULL) {
+            				tree_temp->r = (Htree*)malloc(sizeof(Htree));
             			}
             			tree_temp = tree_temp->r;
 		          }
@@ -325,8 +331,8 @@ void AgainBuildHuffmanTree(int fd1, int size){
 	}  	
 }
 
-// FUNCTION TO GET BACK ORIGINAL FILE WITHOUT LOSING ANY DATA
-void decompress(int fd1, int fd2, int f){
+/* FUNCTION TO GET BACK ORIGINAL FILE WITHOUT LOSING ANY DATA */
+void decompress(int fd1, int fd2, int f) {
         tree_temp = tree;
 	int inp[8], i, k = 0;
 	unsigned char p;
@@ -368,8 +374,7 @@ void decompress(int fd1, int fd2, int f){
 	}
 }
 	    
-// FUNCTION TO CHECK IF A GIVEN NODE IS A ROOT NODE 
-//change name to is leaf for mh_tree
-int isLeafTree(struct MH_Tree* tree_temp){
+/* FUNCTION TO CHECK IF A GIVEN NODE IS A ROOT NODE */
+int isLeafTree(Htree* tree_temp){
 	return !(tree_temp->f) && !(tree_temp->r);
 }			

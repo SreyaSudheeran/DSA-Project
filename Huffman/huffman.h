@@ -1,24 +1,24 @@
-typedef struct MH_Tree{
+typedef struct Htree{
 	char g;
 	int len;
 	int dec;
-	struct MH_Tree *f;
-	struct MH_Tree *r;
-}MH_Tree;
+	struct Htree *f;
+	struct Htree *r;
+}Htree;
 
 
-// DATA STRUCTURE FOR TREE NODES
-typedef struct MH_Node{
+/* DATA STRUCTURE FOR TREE NODES */
+typedef struct node{
     	char character;
     	int freq;
-    	struct MH_Node *l, *r;
-}MH_Node;
+    	struct node *l, *r;
+}node;
      
-// DATA STRUCTURE FOR MIN HEAP     
-typedef struct M_Heap{
+/* DATA STRUCTURE FOR MIN HEAP */
+typedef struct heap{
     	int size;
-    	struct MH_Node **array;
-}M_Heap;
+    	node **array;
+}heap;
      
 typedef struct code{
 	char k;
@@ -30,22 +30,22 @@ typedef struct code{
 
 int frequency(int fd, int freq[]);
 void HuffmanCodes(int fd2, char arr[], int freq[], int size, int f);
-struct MH_Node* buildHuffmanTree(char arr[], int freq[], int size);		
-struct M_Heap* createAndBuildM_Heap(char arr[], int freq[], int size);
-void buildM_Heap(struct M_Heap* M_Heap);
-void M_Heapify(struct M_Heap* M_Heap, int idx);
-struct MH_Node* extractMin(struct M_Heap* M_Heap);
-void insertM_Heap(struct M_Heap* M_Heap, struct MH_Node* MH_Node);
-int isSizeOne(struct M_Heap* M_Heap);
-void swapMH_Node(struct MH_Node** a, struct MH_Node** b);
-int isLeaf(struct MH_Node* root);
-void printCodes(int fd2, struct MH_Node* root, int t[], int top);
+node* buildHuffmanTree(char arr[], int freq[], int size);		
+heap* createAndBuildheap(char arr[], int freq[], int size);
+void buildheap(heap* heap);
+void heapify(heap* heap, int idx);
+node* extractMin(heap* heap);
+void insertheap(heap* heap, node* node);
+int isSizeOne(heap* heap);
+void swapnode(node** a, node** b);
+int isLeaf(node* root);
+void printCodes(int fd2, node* root, int t[], int top);
 void compressfile(int fd1, int fd2, unsigned char a);
 void decimaltobinary(int bin[], int f, int len);
 int binarytodecimal(int bin[], int len);
 void ExtractCodes(int fd2);
 void AgainBuildHuffmanTree(int fd1, int size);
 void decompress(int fd1, int fd2, int f);
-int isLeafTree(struct MH_Tree* tree_temp);
-extern MH_Tree *tree, *tree_temp , *t ;
+int isLeafTree(Htree* tree_temp);
+extern Htree *tree, *tree_temp , *t ;
 extern code *data, *rear , *front ;
