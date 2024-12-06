@@ -1,4 +1,6 @@
 #include "huffman.h"
+#include "compression.h"
+#include "decompression.h"
 #include<stdio.h>
 #include<stdlib.h>
 #include<stdint.h>
@@ -26,13 +28,8 @@ off_t get_file_size(const char *filename) {
 
 int main(int argc, char *argv[]) {
 
-	/* CHECKING PROPER NUMBER OF ARGUMENTS */
-	if(argc != 4){
-		printf("Give Proper Arguments\n");
-	}
-
 	/* CHECKING FLAG: "c" FOR COMPRESSION, "d" FOR DECOMPRESSION */
-	if(strcmp(argv[1], "c") == 0){	
+	if(strcmp(argv[1], "-c1") == 0){	
 		unsigned char a = 0;
 		int fd1, fd2, freq[128], i, size = 0, f;
 		char arr[128];
@@ -99,7 +96,7 @@ int main(int argc, char *argv[]) {
                     printf("Compression successful. Compressed file retained.\n");
                 }
 	}
-	else if(strcmp(argv[1], "d") == 0){
+	else if(strcmp(argv[1], "-uc1") == 0){
 		int size, fd1, fd2, f;
 		fd1 = open(argv[2], O_RDONLY);
 		if(fd1 == -1){
@@ -115,9 +112,36 @@ int main(int argc, char *argv[]) {
 		read(fd1, &f, sizeof(int));
 		AgainBuildHuffmanTree(fd1, size);
 		tree_temp = tree;
-		decompress(fd1, fd2, f);
+		decompressfile(fd1, fd2, f);
 		close(fd1);
 		close(fd2);	
+	}
+	else if(strcmp(argv[1], "-c2") == 0) {
+		FILE *inputFile;
+		FILE *outputFile;
+		inputFile = fopen(argv[2], "r"); 
+		outputFile = fopen(strcat(argv[2], ".lzw"), "w+b"); 
+            
+		if (outputFile == NULL || inputFile == NULL) {
+			printf("Can't open files\n'"); return 0;
+		}
+            
+		compress(inputFile, outputFile);
+	}
+	else if(strcmp(argv[1], "-uc2") == 0) {
+		FILE *inputFile;
+		FILE *outputFile;
+		inputFile = fopen(argv[2], "rb");
+
+		char temp[20]; int length = strlen(argv[2])-4;
+		strncpy(temp, argv[2], length);
+		temp[length] = '\0';
+		outputFile = fopen(temp, "w");
+            
+		if (outputFile == NULL || inputFile == NULL) {
+			printf("Can't open files\n'"); return 0;
+		}
+		decompress(inputFile, outputFile);
 	}
 	return 0;	
 }

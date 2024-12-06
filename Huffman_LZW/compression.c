@@ -6,6 +6,7 @@
 
 int leftover = 0;
 int leftoverBits;
+struct comp_DictNode *dictionary, *tail;
 
 void Dinit(){
 	int i;

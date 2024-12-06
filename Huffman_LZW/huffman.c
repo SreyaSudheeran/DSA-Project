@@ -332,7 +332,7 @@ void AgainBuildHuffmanTree(int fd1, int size){
 }
 
 /* FUNCTION TO GET BACK ORIGINAL FILE WITHOUT LOSING ANY DATA */
-void decompress(int fd1, int fd2, int f) {
+void decompressfile(int fd1, int fd2, int f) {
         tree_temp = tree;
 	int inp[8], i, k = 0;
 	unsigned char p;

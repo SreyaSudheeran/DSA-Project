@@ -45,7 +45,7 @@ void decimaltobinary(int bin[], int f, int len);
 int binarytodecimal(int bin[], int len);
 void ExtractCodes(int fd2);
 void AgainBuildHuffmanTree(int fd1, int size);
-void decompress(int fd1, int fd2, int f);
+void decompressfile(int fd1, int fd2, int f);
 int isLeafTree(Htree* tree_temp);
 extern Htree *tree, *tree_temp , *t ;
 extern code *data, *rear , *front ;

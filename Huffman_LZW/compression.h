@@ -1,3 +1,5 @@
+#include<stdio.h>
+
 typedef struct comp_DictNode {
     int value; 
     int prefix; 
@@ -5,7 +7,7 @@ typedef struct comp_DictNode {
     struct comp_DictNode *next;
 }comp_DictNode;
 
-struct comp_DictNode *dictionary, *tail;
+extern struct comp_DictNode *dictionary, *tail;
 
 void Dinit();
 void appendNode(struct comp_DictNode *node);

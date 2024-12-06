@@ -5,6 +5,7 @@
 
 int leftoverd = 0;
 int leftoverBitsd;
+dcomp_DictElement dictionaryArray[4095];
 
 void ArrayAdd(int prefix, int character, int value) {
         dictionaryArray[value].prefix = prefix;
