@@ -14,6 +14,16 @@
 #define MAX 32
 #define MAX_TREE_HT 100
 
+off_t get_file_size(const char *filename) {
+    struct stat st;
+    if (stat(filename, &st) == 0) {
+        return st.st_size;
+    } else {
+        perror("stat failed");
+        return -1;
+    }
+}
+
 int main(int argc, char *argv[]) {
 
 	/* CHECKING PROPER NUMBER OF ARGUMENTS */
@@ -67,6 +77,27 @@ int main(int argc, char *argv[]) {
 		compressfile(fd1, fd2, a);
 		close(fd1);
 		close(fd2);	
+		off_t source_size = get_file_size(argv[2]);
+                off_t compressed_size = get_file_size(argv[3]);
+
+                if (source_size == -1 || compressed_size == -1) {
+                    fprintf(stderr, "Failed to get file sizes\n");
+                    exit(1);
+                }
+
+                printf("Source file size: %ld bytes\n", source_size);
+                printf("Compressed file size: %ld bytes\n", compressed_size);
+
+                if (compressed_size >= source_size) {
+                    printf("Compressed file is larger or equal to the source file. Deleting the compressed file...\n");
+                    if (unlink(argv[3]) == 0) {
+                        printf("Compressed file deleted successfully.\n");
+                    } else {
+                        perror("Failed to delete compressed file");
+                    }
+                } else {
+                    printf("Compression successful. Compressed file retained.\n");
+                }
 	}
 	else if(strcmp(argv[1], "d") == 0){
 		int size, fd1, fd2, f;
