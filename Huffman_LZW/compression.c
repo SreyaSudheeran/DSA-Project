@@ -1,7 +1,16 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+
 #include "compression.h"
+#include<stdio.h>
+#include<stdlib.h>
+#include<stdint.h>
+#include<errno.h>
+#include<fcntl.h>
+#include<sys/types.h>
+#include<sys/stat.h>
+#include<string.h>
+#include<unistd.h>
+#include<math.h>
+
 
 
 int leftover = 0;
@@ -46,12 +55,14 @@ void Dict_Add(int prefix, int character, int value){
     	node->character = character;
     	appendNode(node);
 }
-void writeBinary(FILE * output, int code){
+void writeBinary(int fd2, int code){
 	if (leftover > 0) {
 	        int previousCode = (leftoverBits << 4) + (code >> 8);
         
-        	fputc(previousCode, output);
-        	fputc(code, output);
+        	if (write(fd2, &previousCode, 1) != 1 || write(fd2, &code, 1) != 1) {
+			perror("Error writing to output file");
+			exit(EXIT_FAILURE);
+		}
         
        		leftover = 0; // no leftover now
     	} 
@@ -59,17 +70,25 @@ void writeBinary(FILE * output, int code){
         	leftoverBits = code & 0xF; // save leftover, the last 00001111
         	leftover = 1;
         	
-        	fputc(code >> 4, output);
+        	int highByte = code >> 4;
+		if (write(fd2, &highByte, 1) != 1) {
+			perror("Error writing to output file");
+			exit(EXIT_FAILURE);
+		}
 	}
 }
 
 
-void compress(FILE *inputFile, FILE *outputFile){
+void compress(int fd1, int fd2){
 	   
-        int prefix = getc(inputFile);
-    	if (prefix == EOF) {
-        	return;
-    	}
+	unsigned char buffer;
+	int prefix;
+
+	if (read(fd1, &buffer, 1) != 1) {
+		return; // File is empty
+	}
+
+	prefix = buffer;
     	int character;
 
 	int nextCode;
@@ -80,18 +99,26 @@ void compress(FILE *inputFile, FILE *outputFile){
     	Dinit();
     
     
-    	while ((character = getc(inputFile)) != (unsigned)EOF) {
-        
-        
-        	if ((index = lookup(prefix, character)) != -1) prefix = index;
-        	else { 
-        	    	writeBinary(outputFile, prefix);
-        	    	if (nextCode < dictionarySize) Dict_Add(prefix, character, nextCode++);
-        	    	prefix = character; 
-        	}
-    	}
-    	writeBinary(outputFile, prefix);
-    	if (leftover > 0) fputc(leftoverBits << 4, outputFile);
+    	while (read(fd2, &buffer, 1) == 1) {
+		character = buffer;
+
+		if ((index = lookup(prefix, character)) != -1) {
+		prefix = index;
+		} else {
+     		       writeBinary(fd2, prefix);
+			if (nextCode < dictionarySize)
+				Dict_Add(prefix, character, nextCode++);
+			prefix = character;
+		}
+	}
+    	writeBinary(fd2, prefix);
+    	if (leftover > 0) {
+		int leftoverByte = leftoverBits << 4;
+		if (write(fd2, &leftoverByte, 1) != 1) {
+			perror("Error writing to output file");
+			exit(EXIT_FAILURE);
+		}
+	}
     
     // free the dictionary here
     	destroy();

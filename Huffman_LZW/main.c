@@ -8,7 +8,6 @@
 #include<fcntl.h>
 #include<sys/types.h>
 #include<sys/stat.h>
-#include<errno.h>
 #include<string.h>
 #include<unistd.h>
 #include<math.h>
@@ -20,7 +19,8 @@ off_t get_file_size(const char *filename) {
     struct stat st;
     if (stat(filename, &st) == 0) {
         return st.st_size;
-    } else {
+    } 
+    else {
         perror("stat failed");
         return -1;
     }
@@ -117,31 +117,42 @@ int main(int argc, char *argv[]) {
 		close(fd2);	
 	}
 	else if(strcmp(argv[1], "-c2") == 0) {
-		FILE *inputFile;
-		FILE *outputFile;
-		inputFile = fopen(argv[2], "r"); 
-		outputFile = fopen(strcat(argv[2], ".lzw"), "w+b"); 
+		int fd1, fd2;
+		fd1 = open(argv[2], O_RDONLY);
+		if(fd1 == -1) {
+			perror("open failed\n");
+			return 0;
+		} 
+		fd2 = open(strcat(argv[2], ".lzw"), O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR); 
+            	if(fd2 == -1) {
+			perror("open failed\n");
+			return 0;
+		} 
             
-		if (outputFile == NULL || inputFile == NULL) {
-			printf("Can't open files\n'"); return 0;
-		}
-            
-		compress(inputFile, outputFile);
+		compress(fd1, fd2);
+		close(fd1);
+		close(fd2);
 	}
 	else if(strcmp(argv[1], "-uc2") == 0) {
-		FILE *inputFile;
-		FILE *outputFile;
-		inputFile = fopen(argv[2], "rb");
+		int fd1, fd2;
+		fd1 = open(argv[2], O_RDONLY);
+		if(fd1 == -1) {
+			perror("open failed\n");
+			return 0;
+		} 
 
 		char temp[20]; int length = strlen(argv[2])-4;
 		strncpy(temp, argv[2], length);
 		temp[length] = '\0';
-		outputFile = fopen(temp, "w");
+		fd2 = open(temp, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
             
-		if (outputFile == NULL || inputFile == NULL) {
-			printf("Can't open files\n'"); return 0;
-		}
-		decompress(inputFile, outputFile);
+		if(fd2 == -1) {
+			perror("open failed\n");
+			return 0;
+		} 
+		decompress(fd1, fd2);
+		close(fd1);
+		close(fd2);
 	}
 	return 0;	
 }
