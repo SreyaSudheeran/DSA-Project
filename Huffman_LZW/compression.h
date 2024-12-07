@@ -1,3 +1,5 @@
+#include<stdio.h>
+
 typedef struct comp_DictNode {
     int value; 
     int prefix; 
@@ -12,8 +14,8 @@ void appendNode(struct comp_DictNode *node);
 void destroy();
 int lookup(int prefix, int character);
 void Dict_Add(int prefix, int character, int value);
-void writeBinary(int fd2, int code);
-void compress(int fd1, int fd2);
+void writeBinary(FILE * output, int code);
+void compress(FILE *inputFile, FILE *outputFile);
 #define dictionarySize 4095
 
 

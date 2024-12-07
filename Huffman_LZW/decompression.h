@@ -11,8 +11,8 @@ extern dcomp_DictElement dictionaryArray[4095];
 void ArrayAdd(int prefix, int character, int value);
 int dcomp_dict_ArrayPrefix(int value);
 int dcomp_dict_ArrayCharacter(int value);
-int readBinary(int fd1);
-int decode(int code, int fd2);
-void compress(int fd1, int fd2);
-void decompress(int fd1, int fd2);
+int readBinary(FILE * input);
+int decode(int code, FILE * outputFile);
+void compress(FILE *inputFile, FILE *outputFile);
+void decompress(FILE *inputFile, FILE *outputFile);
 
