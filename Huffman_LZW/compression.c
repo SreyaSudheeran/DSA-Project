@@ -80,7 +80,7 @@ void compress(FILE *inputFile, FILE *outputFile){
     	Dinit();
     
     
-    	while ((character = getc(inputFile)) != (unsigned)EOF) {
+    	while ((character = getc(inputFile)) != EOF) {
         
         
         	if ((index = lookup(prefix, character)) != -1) prefix = index;
