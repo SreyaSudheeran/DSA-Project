@@ -59,13 +59,15 @@ void decompress(FILE * inputFile, FILE * outputFile) {
         	if (currentCode >= nextCode) {
                     fputc(firstChar = decode(previousCode, outputFile), outputFile); 
                 } 
-        else firstChar = decode(currentCode, outputFile); 
+       		 else
+			firstChar = decode(currentCode, outputFile); 
         
         
-        if (nextCode < dictionarySize) ArrayAdd(previousCode, firstChar, nextCode++);
+       		 if (nextCode < dictionarySize) 
+			 ArrayAdd(previousCode, firstChar, nextCode++);
         
       
-        previousCode = currentCode;
+        	previousCode = currentCode;
     	}
   
 }
